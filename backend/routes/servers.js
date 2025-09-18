@@ -2,6 +2,7 @@ const express = require('express');
 const { Server, VMPool, K8sPool } = require('../models');
 const { auth, adminAuth } = require('../middleware/auth');
 const logger = require('../utils/logger');
+const monitoringService = require('../services/monitoringService');
 
 const router = express.Router();
 
@@ -13,7 +14,9 @@ router.get('/', auth, async (req, res) => {
     const servers = await Server.findAll({
       include: [
         { model: VMPool, as: 'vmPools', through: { attributes: [] } },
-        { model: K8sPool, as: 'k8sPools', through: { attributes: [] } }
+        { model: K8sPool, as: 'k8sPools', through: { attributes: [] } },
+        { model: VMPool, as: 'vmPool', attributes: ['id', 'name', 'description'] },
+        { model: K8sPool, as: 'k8sPool', attributes: ['id', 'name', 'description', 'clusterName'] }
       ],
       order: [['hostname', 'ASC']]
     });
@@ -37,7 +40,9 @@ router.get('/:id', auth, async (req, res) => {
     const server = await Server.findByPk(req.params.id, {
       include: [
         { model: VMPool, as: 'vmPools', through: { attributes: [] } },
-        { model: K8sPool, as: 'k8sPools', through: { attributes: [] } }
+        { model: K8sPool, as: 'k8sPools', through: { attributes: [] } },
+        { model: VMPool, as: 'vmPool', attributes: ['id', 'name', 'description'] },
+        { model: K8sPool, as: 'k8sPool', attributes: ['id', 'name', 'description', 'clusterName'] }
       ]
     });
 
@@ -68,7 +73,11 @@ router.post('/', adminAuth, async (req, res) => {
       totalStorage,
       osVersion = 'Rocky Linux 9',
       sshPort = 22,
-      sshUser = 'root'
+      sshUser = 'root',
+      poolType = 'none',
+      poolId = null,
+      enableMonitoring = false,
+      installPackages = []
     } = req.body;
 
     // Validate required fields
@@ -96,6 +105,10 @@ router.post('/', adminAuth, async (req, res) => {
       osVersion,
       sshPort,
       sshUser,
+      poolType,
+      poolId,
+      monitoringEnabled: enableMonitoring,
+      packagesInstalled: installPackages,
       status: 'active',
       healthStatus: 'healthy'
     });
@@ -237,6 +250,129 @@ router.post('/:id/health-check', auth, async (req, res) => {
     });
   } catch (error) {
     logger.error('Health check error:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// @route   POST /api/servers/:id/assign-pool
+// @desc    Assign server to a pool
+// @access  Admin
+router.post('/:id/assign-pool', adminAuth, async (req, res) => {
+  try {
+    const server = await Server.findByPk(req.params.id);
+
+    if (!server) {
+      return res.status(404).json({ error: 'Server not found' });
+    }
+
+    const { poolType, poolId } = req.body;
+
+    if (!poolType || !poolId) {
+      return res.status(400).json({ error: 'Pool type and pool ID are required' });
+    }
+
+    // Validate pool exists
+    let pool;
+    if (poolType === 'vm') {
+      pool = await VMPool.findByPk(poolId);
+    } else if (poolType === 'k8s') {
+      pool = await K8sPool.findByPk(poolId);
+    } else {
+      return res.status(400).json({ error: 'Invalid pool type' });
+    }
+
+    if (!pool) {
+      return res.status(404).json({ error: 'Pool not found' });
+    }
+
+    await server.update({
+      poolType,
+      poolId
+    });
+
+    logger.info(`Server ${server.hostname} assigned to ${poolType} pool ${pool.name}`);
+
+    res.json({
+      success: true,
+      data: server,
+      message: `Server assigned to ${poolType} pool successfully`
+    });
+  } catch (error) {
+    logger.error('Assign pool error:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// @route   POST /api/servers/:id/setup-monitoring
+// @desc    Setup monitoring on server
+// @access  Admin
+router.post('/:id/setup-monitoring', adminAuth, async (req, res) => {
+  try {
+    const server = await Server.findByPk(req.params.id);
+
+    if (!server) {
+      return res.status(404).json({ error: 'Server not found' });
+    }
+
+    const { packages = [] } = req.body;
+
+    // Test SSH connection first
+    const connectionTest = await monitoringService.testConnection(server);
+    if (!connectionTest.success) {
+      return res.status(400).json({ 
+        error: `Cannot connect to server: ${connectionTest.message}` 
+      });
+    }
+
+    // Setup monitoring and install packages
+    const setupResult = await monitoringService.setupMonitoring(server, packages);
+
+    await server.update({
+      monitoringEnabled: setupResult.status === 'success' || setupResult.status === 'partial',
+      packagesInstalled: setupResult.packagesInstalled,
+      metadata: { ...server.metadata, monitoringSetup: setupResult }
+    });
+
+    logger.info(`Monitoring setup completed on: ${server.hostname}`);
+
+    res.json({
+      success: true,
+      data: {
+        server: server.hostname,
+        setupResult
+      },
+      message: 'Monitoring setup completed successfully'
+    });
+  } catch (error) {
+    logger.error('Setup monitoring error:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// @route   GET /api/servers/pools/available
+// @desc    Get available pools for assignment
+// @access  Private
+router.get('/pools/available', auth, async (req, res) => {
+  try {
+    const vmPools = await VMPool.findAll({
+      where: { status: 'active' },
+      attributes: ['id', 'name', 'description', 'totalCpu', 'totalMemory', 'totalStorage']
+    });
+
+    const k8sPools = await K8sPool.findAll({
+      where: { status: 'active' },
+      attributes: ['id', 'name', 'description', 'clusterName', 'totalCpu', 'totalMemory', 'totalStorage']
+    });
+
+    res.json({
+      success: true,
+      data: {
+        vmPools: vmPools.map(pool => ({ ...pool.toJSON(), type: 'vm' })),
+        k8sPools: k8sPools.map(pool => ({ ...pool.toJSON(), type: 'k8s' }))
+      }
+    });
+  } catch (error) {
+    logger.error('Get available pools error:', error);
     res.status(500).json({ error: 'Server error' });
   }
 });

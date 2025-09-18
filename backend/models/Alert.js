@@ -14,11 +14,13 @@ module.exports = (sequelize, DataTypes) => {
     },
     resourceType: {
       type: DataTypes.ENUM('server', 'vm', 'k8s_node', 'namespace'),
-      allowNull: false
+      allowNull: false,
+      field: 'resource_type'
     },
     resourceId: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      field: 'resource_id'
     },
     metric: {
       type: DataTypes.ENUM('cpu', 'memory', 'storage', 'network', 'disk_io', 'temperature', 'load'),
@@ -50,14 +52,17 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: 'active'
     },
     lastFired: {
-      type: DataTypes.DATE
+      type: DataTypes.DATE,
+      field: 'last_fired'
     },
     lastResolved: {
-      type: DataTypes.DATE
+      type: DataTypes.DATE,
+      field: 'last_resolved'
     },
     fireCount: {
       type: DataTypes.INTEGER,
-      defaultValue: 0
+      defaultValue: 0,
+      field: 'fire_count'
     },
     labels: {
       type: DataTypes.JSON,
@@ -75,7 +80,7 @@ module.exports = (sequelize, DataTypes) => {
     tableName: 'alerts',
     indexes: [
       {
-        fields: ['resourceType', 'resourceId']
+        fields: ['resource_type', 'resource_id']
       },
       {
         fields: ['status']

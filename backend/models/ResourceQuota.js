@@ -11,51 +11,63 @@ module.exports = (sequelize, DataTypes) => {
     },
     cpuLimit: {
       type: DataTypes.INTEGER,
-      comment: 'CPU limit in millicores'
+      comment: 'CPU limit in millicores',
+      field: 'cpu_limit'
     },
     memoryLimit: {
       type: DataTypes.INTEGER,
-      comment: 'Memory limit in MB'
+      comment: 'Memory limit in MB',
+      field: 'memory_limit'
     },
     storageLimit: {
       type: DataTypes.INTEGER,
-      comment: 'Storage limit in GB'
+      comment: 'Storage limit in GB',
+      field: 'storage_limit'
     },
     cpuRequest: {
       type: DataTypes.INTEGER,
-      comment: 'CPU request in millicores'
+      comment: 'CPU request in millicores',
+      field: 'cpu_request'
     },
     memoryRequest: {
       type: DataTypes.INTEGER,
-      comment: 'Memory request in MB'
+      comment: 'Memory request in MB',
+      field: 'memory_request'
     },
     storageRequest: {
       type: DataTypes.INTEGER,
-      comment: 'Storage request in GB'
+      comment: 'Storage request in GB',
+      field: 'storage_request'
     },
     podLimit: {
       type: DataTypes.INTEGER,
-      comment: 'Maximum number of pods'
+      comment: 'Maximum number of pods',
+      field: 'pod_limit'
     },
     serviceLimit: {
       type: DataTypes.INTEGER,
-      comment: 'Maximum number of services'
+      comment: 'Maximum number of services',
+      field: 'service_limit'
     },
     pvcLimit: {
       type: DataTypes.INTEGER,
-      comment: 'Maximum number of persistent volume claims'
+      comment: 'Maximum number of persistent volume claims',
+      field: 'pvc_limit'
     },
     configMapLimit: {
       type: DataTypes.INTEGER,
-      comment: 'Maximum number of config maps'
+      comment: 'Maximum number of config maps',
+      field: 'config_map_limit'
     },
     secretLimit: {
       type: DataTypes.INTEGER,
-      comment: 'Maximum number of secrets'
+      comment: 'Maximum number of secrets',
+      field: 'secret_limit'
     },
     ingressLimit: {
       type: DataTypes.INTEGER,
-      comment: 'Maximum number of ingresses'
+      comment: 'Maximum number of ingresses',
+      field: 'ingress_limit'
     },
     status: {
       type: DataTypes.ENUM('active', 'inactive'),
@@ -70,10 +82,10 @@ module.exports = (sequelize, DataTypes) => {
     indexes: [
       {
         unique: true,
-        fields: ['name', 'namespaceId']
+        fields: ['name', 'namespace_id']
       },
       {
-        fields: ['namespaceId']
+        fields: ['namespace_id']
       },
       {
         fields: ['status']

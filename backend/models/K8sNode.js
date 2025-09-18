@@ -8,7 +8,8 @@ module.exports = (sequelize, DataTypes) => {
     nodeName: {
       type: DataTypes.STRING(100),
       allowNull: false,
-      unique: true
+      unique: true,
+      field: 'node_name'
     },
     role: {
       type: DataTypes.ENUM('master', 'worker'),
@@ -19,17 +20,21 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: 'provisioning'
     },
     kubeletVersion: {
-      type: DataTypes.STRING(50)
+      type: DataTypes.STRING(50),
+      field: 'kubelet_version'
     },
     containerRuntime: {
       type: DataTypes.STRING(50),
-      defaultValue: 'containerd'
+      defaultValue: 'containerd',
+      field: 'container_runtime'
     },
     osImage: {
-      type: DataTypes.STRING(100)
+      type: DataTypes.STRING(100),
+      field: 'os_image'
     },
     kernelVersion: {
-      type: DataTypes.STRING(100)
+      type: DataTypes.STRING(100),
+      field: 'kernel_version'
     },
     architecture: {
       type: DataTypes.STRING(20),
@@ -37,27 +42,33 @@ module.exports = (sequelize, DataTypes) => {
     },
     cpuCapacity: {
       type: DataTypes.INTEGER,
-      comment: 'CPU capacity in millicores'
+      comment: 'CPU capacity in millicores',
+      field: 'cpu_capacity'
     },
     memoryCapacity: {
       type: DataTypes.STRING(20),
-      comment: 'Memory capacity in bytes'
+      comment: 'Memory capacity in bytes',
+      field: 'memory_capacity'
     },
     storageCapacity: {
       type: DataTypes.STRING(20),
-      comment: 'Storage capacity in bytes'
+      comment: 'Storage capacity in bytes',
+      field: 'storage_capacity'
     },
     cpuAllocatable: {
       type: DataTypes.INTEGER,
-      comment: 'Allocatable CPU in millicores'
+      comment: 'Allocatable CPU in millicores',
+      field: 'cpu_allocatable'
     },
     memoryAllocatable: {
       type: DataTypes.STRING(20),
-      comment: 'Allocatable memory in bytes'
+      comment: 'Allocatable memory in bytes',
+      field: 'memory_allocatable'
     },
     storageAllocatable: {
       type: DataTypes.STRING(20),
-      comment: 'Allocatable storage in bytes'
+      comment: 'Allocatable storage in bytes',
+      field: 'storage_allocatable'
     },
     labels: {
       type: DataTypes.JSON,
@@ -72,10 +83,12 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: []
     },
     joinedAt: {
-      type: DataTypes.DATE
+      type: DataTypes.DATE,
+      field: 'joined_at'
     },
     lastHeartbeat: {
-      type: DataTypes.DATE
+      type: DataTypes.DATE,
+      field: 'last_heartbeat'
     },
     metadata: {
       type: DataTypes.JSON,
@@ -86,7 +99,7 @@ module.exports = (sequelize, DataTypes) => {
     indexes: [
       {
         unique: true,
-        fields: ['nodeName']
+        fields: ['node_name']
       },
       {
         fields: ['role']
@@ -95,7 +108,7 @@ module.exports = (sequelize, DataTypes) => {
         fields: ['status']
       },
       {
-        fields: ['serverId']
+        fields: ['server_id']
       }
     ]
   });

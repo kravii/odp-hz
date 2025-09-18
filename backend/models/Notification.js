@@ -22,21 +22,26 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: 'pending'
     },
     sentAt: {
-      type: DataTypes.DATE
+      type: DataTypes.DATE,
+      field: 'sent_at'
     },
     retryCount: {
       type: DataTypes.INTEGER,
-      defaultValue: 0
+      defaultValue: 0,
+      field: 'retry_count'
     },
     maxRetries: {
       type: DataTypes.INTEGER,
-      defaultValue: 3
+      defaultValue: 3,
+      field: 'max_retries'
     },
     nextRetryAt: {
-      type: DataTypes.DATE
+      type: DataTypes.DATE,
+      field: 'next_retry_at'
     },
     errorMessage: {
-      type: DataTypes.TEXT
+      type: DataTypes.TEXT,
+      field: 'error_message'
     },
     metadata: {
       type: DataTypes.JSON,
@@ -52,10 +57,10 @@ module.exports = (sequelize, DataTypes) => {
         fields: ['type']
       },
       {
-        fields: ['sentAt']
+        fields: ['sent_at']
       },
       {
-        fields: ['alertId']
+        fields: ['alert_id']
       }
     ]
   });

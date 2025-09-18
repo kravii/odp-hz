@@ -80,6 +80,30 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: 'healthy',
       field: 'health_status'
     },
+    poolType: {
+      type: DataTypes.ENUM('vm', 'k8s', 'none'),
+      defaultValue: 'none',
+      comment: 'Type of pool this server belongs to',
+      field: 'pool_type'
+    },
+    poolId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      comment: 'ID of the pool this server belongs to',
+      field: 'pool_id'
+    },
+    monitoringEnabled: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      comment: 'Whether monitoring is enabled on this server',
+      field: 'monitoring_enabled'
+    },
+    packagesInstalled: {
+      type: DataTypes.JSON,
+      defaultValue: [],
+      comment: 'List of packages installed on this server',
+      field: 'packages_installed'
+    },
     metadata: {
       type: DataTypes.JSON,
       defaultValue: {}
@@ -115,6 +139,19 @@ module.exports = (sequelize, DataTypes) => {
       through: 'ServerK8sPool',
       foreignKey: 'serverId',
       as: 'k8sPools'
+    });
+    
+    // Direct pool associations for baremetal assignment
+    Server.belongsTo(models.VMPool, {
+      foreignKey: 'poolId',
+      as: 'vmPool',
+      constraints: false
+    });
+    
+    Server.belongsTo(models.K8sPool, {
+      foreignKey: 'poolId',
+      as: 'k8sPool',
+      constraints: false
     });
     
     Server.hasMany(models.VM, {

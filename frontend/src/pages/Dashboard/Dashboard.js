@@ -54,16 +54,22 @@ const Dashboard = () => {
       color: '#1976d2',
     },
     {
+      title: 'Baremetal with Monitoring',
+      value: servers.filter(s => s.monitoringEnabled).length,
+      icon: <Computer />,
+      color: '#4caf50',
+    },
+    {
       title: 'Active VMs',
       value: vms.filter(vm => vm.status === 'running').length,
       icon: <Storage />,
-      color: '#4caf50',
+      color: '#ff9800',
     },
     {
       title: 'K8s Clusters',
       value: k8sPools.length,
       icon: <AccountTree />,
-      color: '#ff9800',
+      color: '#ff5722',
     },
     {
       title: 'Total Users',
@@ -139,7 +145,7 @@ const Dashboard = () => {
         <Grid item xs={12} md={6}>
           <Paper sx={{ p: 2 }}>
             <Typography variant="h6" gutterBottom>
-              Server Status
+              Baremetal Servers Status
             </Typography>
             <List dense>
               {servers.slice(0, 5).map((server) => (
@@ -149,13 +155,33 @@ const Dashboard = () => {
                   </ListItemIcon>
                   <ListItemText
                     primary={server.hostname}
-                    secondary={`${server.ipAddress} - ${server.status}`}
+                    secondary={
+                      <Box>
+                        <Typography variant="body2" color="text.secondary">
+                          {server.ipAddress} - {server.status}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          Pool: {server.poolType === 'vm' && server.vmPool ? server.vmPool.name : 
+                                 server.poolType === 'k8s' && server.k8sPool ? server.k8sPool.name : 
+                                 'None'} | 
+                          Monitoring: {server.monitoringEnabled ? 'Enabled' : 'Disabled'}
+                        </Typography>
+                      </Box>
+                    }
                   />
-                  <Chip
-                    label={server.healthStatus}
-                    size="small"
-                    color={server.healthStatus === 'healthy' ? 'success' : 'error'}
-                  />
+                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 0.5 }}>
+                    <Chip
+                      label={server.healthStatus}
+                      size="small"
+                      color={server.healthStatus === 'healthy' ? 'success' : 'error'}
+                    />
+                    <Chip
+                      label={server.poolType.toUpperCase()}
+                      size="small"
+                      variant="outlined"
+                      color={server.poolType === 'none' ? 'default' : 'primary'}
+                    />
+                  </Box>
                 </ListItem>
               ))}
             </List>

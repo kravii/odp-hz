@@ -107,44 +107,62 @@ const Servers = () => {
   );
 
   const healthCheckMutation = useMutation(
-    (id) => axios.post(`/api/servers/${id}/health-check`),
+    (id) => {
+      console.log('Running health check for server:', id);
+      return axios.post(`/api/servers/${id}/health-check`);
+    },
     {
-      onSuccess: () => {
+      onSuccess: (response) => {
+        console.log('Health check successful:', response.data);
         queryClient.invalidateQueries('servers');
         enqueueSnackbar('Health check completed', { variant: 'success' });
       },
       onError: (error) => {
-        enqueueSnackbar(error.response?.data?.error || 'Health check failed', { variant: 'error' });
+        console.error('Health check error:', error);
+        const errorMessage = error.response?.data?.error || 'Health check failed';
+        enqueueSnackbar(errorMessage, { variant: 'error' });
       },
     }
   );
 
   const assignPoolMutation = useMutation(
-    ({ id, poolData }) => axios.post(`/api/servers/${id}/assign-pool`, poolData),
+    ({ id, poolData }) => {
+      console.log('Assigning pool:', { id, poolData });
+      return axios.post(`/api/servers/${id}/assign-pool`, poolData);
+    },
     {
-      onSuccess: () => {
+      onSuccess: (response) => {
+        console.log('Pool assignment successful:', response.data);
         queryClient.invalidateQueries('servers');
         enqueueSnackbar('Server assigned to pool successfully', { variant: 'success' });
         setPoolDialogOpen(false);
         setPoolData({ poolType: 'vm', poolId: '' });
       },
       onError: (error) => {
-        enqueueSnackbar(error.response?.data?.error || 'Failed to assign pool', { variant: 'error' });
+        console.error('Pool assignment error:', error);
+        const errorMessage = error.response?.data?.error || 'Failed to assign pool';
+        enqueueSnackbar(errorMessage, { variant: 'error' });
       },
     }
   );
 
   const setupMonitoringMutation = useMutation(
-    ({ id, monitoringData }) => axios.post(`/api/servers/${id}/setup-monitoring`, monitoringData),
+    ({ id, monitoringData }) => {
+      console.log('Setting up monitoring:', { id, monitoringData });
+      return axios.post(`/api/servers/${id}/setup-monitoring`, monitoringData);
+    },
     {
-      onSuccess: () => {
+      onSuccess: (response) => {
+        console.log('Monitoring setup successful:', response.data);
         queryClient.invalidateQueries('servers');
         enqueueSnackbar('Monitoring setup completed successfully', { variant: 'success' });
         setMonitoringDialogOpen(false);
         setMonitoringData({ packages: [] });
       },
       onError: (error) => {
-        enqueueSnackbar(error.response?.data?.error || 'Failed to setup monitoring', { variant: 'error' });
+        console.error('Monitoring setup error:', error);
+        const errorMessage = error.response?.data?.error || 'Failed to setup monitoring';
+        enqueueSnackbar(errorMessage, { variant: 'error' });
       },
     }
   );
@@ -261,13 +279,24 @@ const Servers = () => {
 
   const handlePoolSubmit = () => {
     if (selectedServer) {
-      assignPoolMutation.mutate({ id: selectedServer.id, poolData });
+      assignPoolMutation.mutate({ 
+        id: selectedServer.id, 
+        poolData: {
+          poolType: poolData.poolType,
+          poolId: poolData.poolId
+        }
+      });
     }
   };
 
   const handleMonitoringSubmit = () => {
     if (selectedServer) {
-      setupMonitoringMutation.mutate({ id: selectedServer.id, monitoringData });
+      setupMonitoringMutation.mutate({ 
+        id: selectedServer.id, 
+        monitoringData: {
+          packages: monitoringData.packages
+        }
+      });
     }
   };
 

@@ -13,7 +13,8 @@ module.exports = (sequelize, DataTypes) => {
     ipAddress: {
       type: DataTypes.STRING(45),
       allowNull: false,
-      unique: true
+      unique: true,
+      field: 'ip_address'
     },
     status: {
       type: DataTypes.ENUM('running', 'stopped', 'starting', 'stopping', 'error', 'provisioning'),
@@ -21,15 +22,18 @@ module.exports = (sequelize, DataTypes) => {
     },
     cpuCores: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      field: 'cpu_cores'
     },
     memoryGb: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      field: 'memory_gb'
     },
     storageGb: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      field: 'storage_gb'
     },
     osImage: {
       type: DataTypes.ENUM(
@@ -37,29 +41,36 @@ module.exports = (sequelize, DataTypes) => {
         'rockylinux9', 'ubuntu20', 'ubuntu22', 
         'ubuntu24', 'oel8.10'
       ),
-      allowNull: false
+      allowNull: false,
+      field: 'os_image'
     },
     mountPoints: {
       type: DataTypes.JSON,
-      defaultValue: []
+      defaultValue: [],
+      field: 'mount_points'
     },
     sshKey: {
       type: DataTypes.TEXT,
-      allowNull: false
+      allowNull: false,
+      field: 'ssh_key'
     },
     defaultUser: {
       type: DataTypes.STRING(50),
-      defaultValue: 'acceldata'
+      defaultValue: 'acceldata',
+      field: 'default_user'
     },
     provisionedAt: {
-      type: DataTypes.DATE
+      type: DataTypes.DATE,
+      field: 'provisioned_at'
     },
     lastHealthCheck: {
-      type: DataTypes.DATE
+      type: DataTypes.DATE,
+      field: 'last_health_check'
     },
     healthStatus: {
       type: DataTypes.ENUM('healthy', 'warning', 'critical'),
-      defaultValue: 'healthy'
+      defaultValue: 'healthy',
+      field: 'health_status'
     },
     metadata: {
       type: DataTypes.JSON,
@@ -74,16 +85,16 @@ module.exports = (sequelize, DataTypes) => {
       },
       {
         unique: true,
-        fields: ['ipAddress']
+        fields: ['ip_address']
       },
       {
         fields: ['status']
       },
       {
-        fields: ['serverId']
+        fields: ['server_id']
       },
       {
-        fields: ['createdBy']
+        fields: ['created_by']
       }
     ]
   });

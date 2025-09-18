@@ -13,7 +13,8 @@ module.exports = (sequelize, DataTypes) => {
     ipAddress: {
       type: DataTypes.STRING(45),
       allowNull: false,
-      unique: true
+      unique: true,
+      field: 'ip_address'
     },
     status: {
       type: DataTypes.ENUM('active', 'inactive', 'maintenance', 'error'),
@@ -22,51 +23,62 @@ module.exports = (sequelize, DataTypes) => {
     totalCpu: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      comment: 'Total CPU cores'
+      comment: 'Total CPU cores',
+      field: 'total_cpu'
     },
     totalMemory: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      comment: 'Total memory in GB'
+      comment: 'Total memory in GB',
+      field: 'total_memory'
     },
     totalStorage: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      comment: 'Total storage in GB'
+      comment: 'Total storage in GB',
+      field: 'total_storage'
     },
     allocatedCpu: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
-      comment: 'Allocated CPU cores'
+      comment: 'Allocated CPU cores',
+      field: 'allocated_cpu'
     },
     allocatedMemory: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
-      comment: 'Allocated memory in GB'
+      comment: 'Allocated memory in GB',
+      field: 'allocated_memory'
     },
     allocatedStorage: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
-      comment: 'Allocated storage in GB'
+      comment: 'Allocated storage in GB',
+      field: 'allocated_storage'
     },
     osVersion: {
       type: DataTypes.STRING(50),
-      defaultValue: 'Rocky Linux 9'
+      defaultValue: 'Rocky Linux 9',
+      field: 'os_version'
     },
     sshPort: {
       type: DataTypes.INTEGER,
-      defaultValue: 22
+      defaultValue: 22,
+      field: 'ssh_port'
     },
     sshUser: {
       type: DataTypes.STRING(50),
-      defaultValue: 'root'
+      defaultValue: 'root',
+      field: 'ssh_user'
     },
     lastHealthCheck: {
-      type: DataTypes.DATE
+      type: DataTypes.DATE,
+      field: 'last_health_check'
     },
     healthStatus: {
       type: DataTypes.ENUM('healthy', 'warning', 'critical'),
-      defaultValue: 'healthy'
+      defaultValue: 'healthy',
+      field: 'health_status'
     },
     metadata: {
       type: DataTypes.JSON,
@@ -81,13 +93,13 @@ module.exports = (sequelize, DataTypes) => {
       },
       {
         unique: true,
-        fields: ['ipAddress']
+        fields: ['ip_address']
       },
       {
         fields: ['status']
       },
       {
-        fields: ['healthStatus']
+        fields: ['health_status']
       }
     ]
   });

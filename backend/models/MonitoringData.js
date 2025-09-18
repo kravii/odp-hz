@@ -7,59 +7,73 @@ module.exports = (sequelize, DataTypes) => {
     },
     resourceType: {
       type: DataTypes.ENUM('server', 'vm', 'k8s_node'),
-      allowNull: false
+      allowNull: false,
+      field: 'resource_type'
     },
     resourceId: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      field: 'resource_id'
     },
     cpuUsage: {
       type: DataTypes.DECIMAL(5, 2),
-      comment: 'CPU usage percentage'
+      comment: 'CPU usage percentage',
+      field: 'cpu_usage'
     },
     memoryUsage: {
       type: DataTypes.DECIMAL(5, 2),
-      comment: 'Memory usage percentage'
+      comment: 'Memory usage percentage',
+      field: 'memory_usage'
     },
     storageUsage: {
       type: DataTypes.DECIMAL(5, 2),
-      comment: 'Storage usage percentage'
+      comment: 'Storage usage percentage',
+      field: 'storage_usage'
     },
     networkInBytes: {
       type: DataTypes.BIGINT,
-      comment: 'Network input in bytes'
+      comment: 'Network input in bytes',
+      field: 'network_in_bytes'
     },
     networkOutBytes: {
       type: DataTypes.BIGINT,
-      comment: 'Network output in bytes'
+      comment: 'Network output in bytes',
+      field: 'network_out_bytes'
     },
     diskReadOps: {
       type: DataTypes.BIGINT,
-      comment: 'Disk read operations'
+      comment: 'Disk read operations',
+      field: 'disk_read_ops'
     },
     diskWriteOps: {
       type: DataTypes.BIGINT,
-      comment: 'Disk write operations'
+      comment: 'Disk write operations',
+      field: 'disk_write_ops'
     },
     diskReadBytes: {
       type: DataTypes.BIGINT,
-      comment: 'Disk read bytes'
+      comment: 'Disk read bytes',
+      field: 'disk_read_bytes'
     },
     diskWriteBytes: {
       type: DataTypes.BIGINT,
-      comment: 'Disk write bytes'
+      comment: 'Disk write bytes',
+      field: 'disk_write_bytes'
     },
     loadAverage1m: {
       type: DataTypes.DECIMAL(5, 2),
-      comment: '1-minute load average'
+      comment: '1-minute load average',
+      field: 'load_average_1m'
     },
     loadAverage5m: {
       type: DataTypes.DECIMAL(5, 2),
-      comment: '5-minute load average'
+      comment: '5-minute load average',
+      field: 'load_average_5m'
     },
     loadAverage15m: {
       type: DataTypes.DECIMAL(5, 2),
-      comment: '15-minute load average'
+      comment: '15-minute load average',
+      field: 'load_average_15m'
     },
     temperature: {
       type: DataTypes.DECIMAL(5, 2),
@@ -82,13 +96,13 @@ module.exports = (sequelize, DataTypes) => {
     tableName: 'monitoring_data',
     indexes: [
       {
-        fields: ['resourceType', 'resourceId']
+        fields: ['resource_type', 'resource_id']
       },
       {
         fields: ['timestamp']
       },
       {
-        fields: ['resourceType', 'resourceId', 'timestamp']
+        fields: ['resource_type', 'resource_id', 'timestamp']
       }
     ]
   });

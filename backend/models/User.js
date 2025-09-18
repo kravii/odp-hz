@@ -29,21 +29,26 @@ module.exports = (sequelize, DataTypes) => {
     },
     firstName: {
       type: DataTypes.STRING(50),
-      allowNull: false
+      allowNull: false,
+      field: 'first_name'
     },
     lastName: {
       type: DataTypes.STRING(50),
-      allowNull: false
+      allowNull: false,
+      field: 'last_name'
     },
     isActive: {
       type: DataTypes.BOOLEAN,
-      defaultValue: true
+      defaultValue: true,
+      field: 'is_active'
     },
     lastLogin: {
-      type: DataTypes.DATE
+      type: DataTypes.DATE,
+      field: 'last_login'
     },
     sshPublicKey: {
-      type: DataTypes.TEXT
+      type: DataTypes.TEXT,
+      field: 'ssh_public_key'
     }
   }, {
     tableName: 'users',

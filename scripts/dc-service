@@ -1,0 +1,98 @@
+#!/bin/bash
+
+# DC Management Service Control Script
+# Usage: dc-service [start|stop|restart|status] [backend|frontend|all]
+
+ACTION=$1
+SERVICE=$2
+
+if [ -z "$SERVICE" ] || [ -z "$ACTION" ]; then
+    echo "Usage: dc-service [start|stop|restart|status] [backend|frontend|all]"
+    echo ""
+    echo "Examples:"
+    echo "  dc-service start backend"
+    echo "  dc-service stop frontend"
+    echo "  dc-service restart all"
+    echo "  dc-service status all"
+    exit 1
+fi
+
+case "$ACTION" in
+    "start")
+        case "$SERVICE" in
+            "backend")
+                /workspace/scripts/start-backend.sh
+                ;;
+            "frontend")
+                /workspace/scripts/start-frontend.sh
+                ;;
+            "all")
+                /workspace/scripts/start-all.sh
+                ;;
+            *)
+                echo "Invalid service: $SERVICE"
+                echo "Valid services: backend, frontend, all"
+                exit 1
+                ;;
+        esac
+        ;;
+    "stop")
+        case "$SERVICE" in
+            "backend")
+                /workspace/scripts/stop-backend.sh
+                ;;
+            "frontend")
+                /workspace/scripts/stop-frontend.sh
+                ;;
+            "all")
+                /workspace/scripts/stop-all.sh
+                ;;
+            *)
+                echo "Invalid service: $SERVICE"
+                echo "Valid services: backend, frontend, all"
+                exit 1
+                ;;
+        esac
+        ;;
+    "restart")
+        case "$SERVICE" in
+            "backend")
+                /workspace/scripts/stop-backend.sh
+                sleep 2
+                /workspace/scripts/start-backend.sh
+                ;;
+            "frontend")
+                /workspace/scripts/stop-frontend.sh
+                sleep 2
+                /workspace/scripts/start-frontend.sh
+                ;;
+            "all")
+                /workspace/scripts/stop-all.sh
+                sleep 3
+                /workspace/scripts/start-all.sh
+                ;;
+            *)
+                echo "Invalid service: $SERVICE"
+                echo "Valid services: backend, frontend, all"
+                exit 1
+                ;;
+        esac
+        ;;
+    "status")
+        case "$SERVICE" in
+            "backend"|"frontend"|"all")
+                /workspace/scripts/status.sh
+                ;;
+            *)
+                echo "Invalid service: $SERVICE"
+                echo "Valid services: backend, frontend, all"
+                exit 1
+                ;;
+        esac
+        ;;
+    *)
+        echo "Invalid action: $ACTION"
+        echo "Valid actions: start, stop, restart, status"
+        exit 1
+        ;;
+esac

@@ -1,0 +1,36 @@
+{
+  "name": "internal-dc-management",
+  "version": "1.0.0",
+  "description": "Internal Data Center Management System for VMs and Kubernetes clusters",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run backend:dev\" \"npm run frontend:dev\"",
+    "backend:dev": "cd backend && npm run dev",
+    "frontend:dev": "cd frontend && npm start",
+    "build": "cd frontend && npm run build",
+    "start": "cd backend && npm start",
+    "test": "npm run backend:test && npm run frontend:test",
+    "backend:test": "cd backend && npm test",
+    "frontend:test": "cd frontend && npm test",
+    "setup": "npm run setup:backend && npm run setup:frontend",
+    "setup:backend": "cd backend && npm install",
+    "setup:frontend": "cd frontend && npm install"
+  },
+  "keywords": [
+    "kubernetes",
+    "vm-management",
+    "baremetal",
+    "hetzner",
+    "data-center",
+    "monitoring"
+  ],
+  "author": "Internal DC Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "workspaces": [
+    "backend",
+    "frontend"
+  ]
+}

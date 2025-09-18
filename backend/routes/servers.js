@@ -3,6 +3,7 @@ const { Server, VMPool, K8sPool } = require('../models');
 const { auth, adminAuth } = require('../middleware/auth');
 const logger = require('../utils/logger');
 const monitoringService = require('../services/monitoringService');
+const { Op } = require('sequelize');
 
 const router = express.Router();
 
@@ -88,7 +89,7 @@ router.post('/', adminAuth, async (req, res) => {
     // Check if server already exists
     const existingServer = await Server.findOne({
       where: {
-        $or: [{ hostname }, { ipAddress }]
+        [Op.or]: [{ hostname }, { ipAddress }]
       }
     });
 
@@ -106,7 +107,7 @@ router.post('/', adminAuth, async (req, res) => {
       sshPort,
       sshUser,
       poolType,
-      poolId,
+      poolId: poolId || null,
       monitoringEnabled: enableMonitoring,
       packagesInstalled: installPackages,
       status: 'active',
